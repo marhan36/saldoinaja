@@ -2,21 +2,39 @@ package id.myproject.saldoinaja.model.db;
 
 import id.myproject.saldoinaja.model.enums.TransactionType;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
 
 /**
  * @author Muamar Hanafi | xsis.muamarh@xlsmart.co.id | 2026-01-26
  */
-@Data
+
+@Getter
+@Setter
 @Entity
+@NoArgsConstructor
+@Accessors(chain = true)
 @Table(name = "category")
 public class Transaction {
+
+    public Transaction(TransactionType transactionType, Long amount, Long walletFromId, Long walletToId, Long categoryId) {
+        this.transactionType = transactionType;
+        this.amount = amount;
+        this.walletFromId = walletFromId;
+        this.walletToId = walletToId;
+        this.categoryId = categoryId;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type", nullable = false)
     private TransactionType transactionType;
 
@@ -24,17 +42,18 @@ public class Transaction {
     private Long amount;
 
     @Column(name = "wallet_from_id")
-    private String walletFromId;
+    private Long walletFromId;
 
     @Column(name = "wallet_to_id")
-    private String walletToId;
+    private Long walletToId;
 
     @Column(name = "category_id")
-    private String categoryId;
+    private Long categoryId;
 
     @Column(name = "note")
     private String note;
 
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private Date createdAt;
 }

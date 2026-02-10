@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Saldoinaja</title>
+</head>
+<body>
+    <h1>Welcome to Saldoinaja</h1>
+    <h2>Wallets</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="wallet : ${wallets}">
+                <td th:text="${wallet.name}"></td>
+                <td th:text="${wallet.walletType}"></td>
+                <td th:text="${wallet.balance}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
