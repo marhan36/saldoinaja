@@ -7,11 +7,13 @@
 <body>
     <h1>Welcome to Saldoinaja</h1>
     <h2>Wallets</h2>
+    <button onclick="window.open('/wallet/add', 'Add Wallet', 'width=500,height=400')">Add Wallet</button>
     <table border="1">
         <thead>
             <tr>
                 <th>Name</th>
                 <th>Type</th>
+                <th>Provider</th>
                 <th>Balance</th>
             </tr>
         </thead>
@@ -19,6 +21,7 @@
             <tr th:each="wallet : ${wallets}">
                 <td th:text="${wallet.name}"></td>
                 <td th:text="${wallet.walletType}"></td>
+                <td th:text="${wallet.provider.name}"></td>
                 <td th:text="${wallet.balance}"></td>
             </tr>
         </tbody>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Wallet</title>
+    <script src="/js/popup-form.js"></script>
+</head>
+<body>
+    <h2>Add New Wallet</h2>
+    <form action="/wallet/add" method="post" onsubmit="submitFormAndClosePopup(event)">
+        <label>Name: <input type="text" name="name" required></label><br><br>
+        <label>Type:
+            <select name="walletType" id="walletType" required onchange="filterProviders()">
+                <option value="">Select Type</option>
+                <option value="CASH">Cash</option>
+                <option value="BANK">Bank</option>
+                <option value="EWALLET">E-Wallet</option>
+            </select>
+        </label><br><br>
+        <label>Provider:
+            <select name="providerId" id="providerId" required>
+                <option value="">Select Provider</option>
+                <option th:each="provider : ${providers}" th:value="${provider.id}" th:text="${provider.name}" th:attr="data-type=${provider.walletType}"></option>
+            </select>
+        </label><br><br>
+        <label>Balance: <input type="number" name="balance" value="0"></label><br><br>
+        <button type="submit">Save</button>
+        <button type="button" onclick="window.close()">Cancel</button>
+    </form>
+    <script>
+        function filterProviders() {
+            const type = document.getElementById('walletType').value;
+            const providerSelect = document.getElementById('providerId');
+            const options = providerSelect.options;
+            
+            for (let i = 1; i < options.length; i++) {
+                const option = options[i];
+                if (type === '' || option.getAttribute('data-type') === type) {
+                    option.style.display = '';
+                } else {
+                    option.style.display = 'none';
+                }
+            }
+            providerSelect.value = '';
+        }
+    </script>
+</body>
+</html>

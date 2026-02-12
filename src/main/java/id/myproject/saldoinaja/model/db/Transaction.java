@@ -22,7 +22,7 @@ import java.util.Date;
 @Table(name = "category")
 public class Transaction {
 
-    public Transaction(TransactionType transactionType, Long amount, Long walletFromId, Long walletToId, Long categoryId) {
+    public Transaction(TransactionType transactionType, Long amount, Wallet walletFromId, Wallet walletToId, Long categoryId) {
         this.transactionType = transactionType;
         this.amount = amount;
         this.walletFromId = walletFromId;
@@ -41,11 +41,13 @@ public class Transaction {
     @Column(name = "amount", nullable = false)
     private Long amount;
 
-    @Column(name = "wallet_from_id")
-    private Long walletFromId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "wallet_from_id")
+    private Wallet walletFromId;
 
-    @Column(name = "wallet_to_id")
-    private Long walletToId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "wallet_to_id")
+    private Wallet walletToId;
 
     @Column(name = "category_id")
     private Long categoryId;

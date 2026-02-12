@@ -34,13 +34,15 @@ public class DataInitializer implements CommandLineRunner {
             return;
         }
 
-        walletProviderRepository.save(new WalletProvider("Cash", WalletType.CASH, true));
+        WalletProvider walletProviderCash = new WalletProvider("Cash", WalletType.CASH, true);
+
+        walletProviderRepository.save(walletProviderCash);
         walletProviderRepository.save(new WalletProvider("BCA", WalletType.BANK, true));
         walletProviderRepository.save(new WalletProvider("BRI", WalletType.BANK, true));
         walletProviderRepository.save(new WalletProvider("Dana", WalletType.EWALLET, true));
         walletProviderRepository.save(new WalletProvider("GoPay", WalletType.EWALLET, true));
 
-        walletRepository.save(new Wallet("Cash", WalletType.CASH, 1L, 0L, true));
+        walletRepository.save(new Wallet("Cash", WalletType.CASH, walletProviderCash, 0L, true));
 
         initRepo.save(new AppInit("INITIAL_DATA", LocalDateTime.now()));
     }

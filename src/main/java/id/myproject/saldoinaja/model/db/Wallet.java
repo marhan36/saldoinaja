@@ -22,10 +22,10 @@ import java.util.Date;
 @Table(name = "wallet")
 public class Wallet {
 
-    public Wallet(String name, WalletType walletType, Long providerId, Long balance, boolean preset) {
+    public Wallet(String name, WalletType walletType, WalletProvider provider, Long balance, boolean preset) {
         this.name = name;
         this.walletType = walletType;
-        this.providerId = providerId;
+        this.provider = provider;
         this.balance = balance != null ? balance : 0L;
         this.preset = preset;
     }
@@ -44,8 +44,9 @@ public class Wallet {
     @Column(name = "wallet_type", nullable = false)
     private WalletType walletType;
 
-    @Column(name = "provider_id", nullable = false)
-    private Long providerId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "provider_id", nullable = false)
+    private WalletProvider provider;
 
     @Column(name = "balance", nullable = false)
     private Long balance;
