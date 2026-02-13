@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Provider</title>
+    <script src="/js/popup-form.js"></script>
+</head>
+<body>
+    <h2>Add New Provider</h2>
+    <form action="/provider/add" method="post" onsubmit="submitFormAndClosePopup(event)">
+        <label>Name: <input type="text" name="name" required></label><br><br>
+        <label>Type:
+            <select name="walletType" required>
+                <option value="CASH">Cash</option>
+                <option value="BANK">Bank</option>
+                <option value="EWALLET">E-Wallet</option>
+            </select>
+        </label><br><br>
+        <button type="submit">Save</button>
+        <button type="button" onclick="window.close()">Cancel</button>
+    </form>
+    
+    <script>
+        // Initialize with first option selected
+        window.onload = function() {
+            document.querySelector('select[name="walletType"]').selectedIndex = 0;
+        };
+    </script>
+</body>
+</html>

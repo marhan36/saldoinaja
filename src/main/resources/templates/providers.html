@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Providers</title>
+</head>
+<body>
+    <h1>Manage Providers</h1>
+    
+    <div style="margin-bottom: 20px;">
+        <button onclick="window.open('/provider/add', 'Add Provider', 'width=400,height=300')">Add Provider</button>
+        <button onclick="window.location.href='/'">Back to Home</button>
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+        <label>Filter by Type:</label>
+        <select onchange="filterByType(this.value)">
+            <option value="">All Types</option>
+            <option value="CASH" th:selected="${selectedType != null && selectedType.name() == 'CASH'}">Cash</option>
+            <option value="BANK" th:selected="${selectedType != null && selectedType.name() == 'BANK'}">Bank</option>
+            <option value="EWALLET" th:selected="${selectedType != null && selectedType.name() == 'EWALLET'}">E-Wallet</option>
+        </select>
+    </div>
+    
+    <table border="1" style="width: 100%;">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Preset</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="provider : ${providers}">
+                <td th:text="${provider.name}"></td>
+                <td th:text="${provider.walletType}"></td>
+                <td th:text="${provider.preset ? 'Yes' : 'No'}"></td>
+                <td>
+                    <button th:onclick="'window.open(\'/provider/details/' + ${provider.id} + '\', \'Provider Details\', \'width=500,height=400\')'">Details</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        function filterByType(type) {
+            if (type === '') {
+                window.location.href = '/providers';
+            } else {
+                window.location.href = '/providers?type=' + type;
+            }
+        }
+    </script>
+</body>
+</html>
