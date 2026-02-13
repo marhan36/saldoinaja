@@ -15,6 +15,7 @@
                 <th>Type</th>
                 <th>Provider</th>
                 <th>Balance</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -23,6 +24,9 @@
                 <td th:text="${wallet.walletType}"></td>
                 <td th:text="${wallet.provider.name}"></td>
                 <td th:text="${wallet.balance}"></td>
+                <td>
+                    <button th:onclick="'window.open(\'/wallet/details/' + ${wallet.id} + '\', \'Wallet Details\', \'width=500,height=400\')'">Details</button>
+                </td>
             </tr>
         </tbody>
     </table>

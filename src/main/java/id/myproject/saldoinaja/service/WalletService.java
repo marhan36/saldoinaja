@@ -78,4 +78,9 @@ public class WalletService {
     public List<WalletProvider> getAllProviders() {
         return walletProviderRepository.findAll();
     }
+
+    public Wallet getWalletById(Long id) {
+        return walletRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+    }
 }

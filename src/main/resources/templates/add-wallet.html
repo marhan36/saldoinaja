@@ -11,7 +11,6 @@
         <label>Name: <input type="text" name="name" required></label><br><br>
         <label>Type:
             <select name="walletType" id="walletType" required onchange="filterProviders()">
-                <option value="">Select Type</option>
                 <option value="CASH">Cash</option>
                 <option value="BANK">Bank</option>
                 <option value="EWALLET">E-Wallet</option>
@@ -19,7 +18,6 @@
         </label><br><br>
         <label>Provider:
             <select name="providerId" id="providerId" required>
-                <option value="">Select Provider</option>
                 <option th:each="provider : ${providers}" th:value="${provider.id}" th:text="${provider.name}" th:attr="data-type=${provider.walletType}"></option>
             </select>
         </label><br><br>
@@ -32,17 +30,32 @@
             const type = document.getElementById('walletType').value;
             const providerSelect = document.getElementById('providerId');
             const options = providerSelect.options;
+            let firstVisibleOption = null;
             
-            for (let i = 1; i < options.length; i++) {
+            for (let i = 0; i < options.length; i++) {
                 const option = options[i];
                 if (type === '' || option.getAttribute('data-type') === type) {
                     option.style.display = '';
+                    if (!firstVisibleOption) {
+                        firstVisibleOption = option;
+                    }
                 } else {
                     option.style.display = 'none';
                 }
             }
-            providerSelect.value = '';
+            
+            // Auto-select first available provider
+            if (firstVisibleOption) {
+                providerSelect.value = firstVisibleOption.value;
+            }
         }
+        
+        // Initialize on page load
+        window.onload = function() {
+            // Set default wallet type to first option and filter providers
+            document.getElementById('walletType').selectedIndex = 0;
+            filterProviders();
+        };
     </script>
 </body>
 </html>
