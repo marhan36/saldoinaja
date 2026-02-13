@@ -94,8 +94,8 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${provider.walletType}"></td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${provider.preset ? 'Yes' : 'No'}"></td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                <button th:onclick="'openProviderDetails(' + ${provider.id} + ')'"
-                                        @click="currentProviderId = $event.target.getAttribute('onclick').match(/\d+/)[0]; showProviderDetails = true"
+                                <button th:attr="data-id=${provider.id}"
+                                        @click="currentProviderId = $event.target.getAttribute('data-id'); showProviderDetails = true"
                                         class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded transition duration-200">
                                     Details
                                 </button>
@@ -151,7 +151,9 @@
                             </svg>
                         </button>
                     </div>
-                    <iframe :src="'/provider/details/' + currentProviderId" class="w-full h-96 border-0"></iframe>
+                    <template x-if="currentProviderId">
+                        <iframe :src="'/provider/details/' + currentProviderId" class="w-full h-96 border-0"></iframe>
+                    </template>
                 </div>
             </div>
         </div>
