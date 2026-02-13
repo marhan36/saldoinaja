@@ -31,28 +31,28 @@ public class WalletController {
 
     @PostMapping("/wallet/add")
     public String addWallet(@RequestParam String name, @RequestParam WalletType walletType,
-                            @RequestParam Long providerId, @RequestParam Long balance) {
-        walletService.addWallet(name, walletType, providerId, balance);
-        return "redirect:/";
+                            @RequestParam Long providerId, @RequestParam(required = false) Long balance) {
+        walletService.addWallet(name, walletType, providerId, balance != null ? balance : 0L);
+        return "redirect:/?success=wallet_added";
     }
 
     @PostMapping("/wallet/edit/{id}")
     public String editWallet(@PathVariable Long id, @RequestParam String name, 
                             @RequestParam WalletType walletType, @RequestParam Long providerId, 
-                            @RequestParam Long balance) {
+                            @RequestParam(required = false) Long balance) {
         Wallet wallet = new Wallet(name, walletType, 
                 walletService.getAllProviders().stream()
                         .filter(p -> p.getId().equals(providerId))
-                        .findFirst().orElseThrow(), balance, false);
+                        .findFirst().orElseThrow(), balance != null ? balance : 0L, false);
         wallet.setId(id);
         walletService.editWallet(id, wallet);
-        return "redirect:/";
+        return "redirect:/?success=wallet_updated";
     }
 
     @PostMapping("/wallet/delete/{id}")
     public String deleteWallet(@PathVariable Long id) {
         walletService.deleteWallet(id);
-        return "redirect:/";
+        return "redirect:/?success=wallet_deleted";
     }
 
     @GetMapping("/wallet/details/{id}")

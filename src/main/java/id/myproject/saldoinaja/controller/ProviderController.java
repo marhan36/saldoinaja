@@ -44,7 +44,7 @@ public class ProviderController {
     public String addProvider(@RequestParam String name, @RequestParam WalletType walletType) {
         WalletProvider provider = new WalletProvider(name, walletType, false);
         walletService.addWalletProvider(provider);
-        return "redirect:/providers";
+        return "redirect:/providers?success=provider_added";
     }
 
     @GetMapping("/provider/details/{id}")
@@ -63,12 +63,12 @@ public class ProviderController {
         WalletProvider provider = new WalletProvider(name, walletType, false);
         provider.setId(id);
         walletService.editWalletProvider(id, provider);
-        return "redirect:/providers";
+        return "redirect:/providers?success=provider_updated";
     }
 
     @PostMapping("/provider/delete/{id}")
     public String deleteProvider(@PathVariable Long id) {
         walletService.deleteWalletProvider(id);
-        return "redirect:/providers";
+        return "redirect:/providers?success=provider_deleted";
     }
 }

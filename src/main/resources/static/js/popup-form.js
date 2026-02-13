@@ -5,7 +5,12 @@ function submitFormAndClosePopup(event) {
         method: 'POST',
         body: new FormData(form)
     }).then(() => {
-        if (window.opener) window.opener.location.reload();
-        window.close();
+        // Send message to parent window to close modal and reload
+        if (window.parent !== window) {
+            window.parent.postMessage('reloadAndClose', '*');
+        } else if (window.opener) {
+            window.opener.location.reload();
+            window.close();
+        }
     });
 }

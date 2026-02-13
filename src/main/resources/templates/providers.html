@@ -2,46 +2,160 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Providers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body>
-    <h1>Manage Providers</h1>
-    
-    <div style="margin-bottom: 20px;">
-        <button onclick="window.open('/provider/add', 'Add Provider', 'width=400,height=300')">Add Provider</button>
-        <button onclick="window.location.href='/'">Back to Home</button>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl"
+         x-data="{
+             showAddProvider: false,
+             showProviderDetails: false,
+             currentProviderId: null,
+             showAlert: false,
+             alertMessage: ''
+         }"
+         x-init="
+             const urlParams = new URLSearchParams(window.location.search);
+             const success = urlParams.get('success');
+             if (success) {
+                 const messages = {
+                     'provider_added': 'Provider added successfully!',
+                     'provider_updated': 'Provider updated successfully!',
+                     'provider_deleted': 'Provider deleted successfully!'
+                 };
+                 alertMessage = messages[success] || 'Operation completed successfully!';
+                 showAlert = true;
+                 setTimeout(() => { showAlert = false; }, 3000);
+                 const url = new URL(window.location);
+                 url.searchParams.delete('success');
+                 window.history.replaceState({}, '', url);
+             }
+         "
+         @close-modal-no-reload.window="showAddProvider = false; showProviderDetails = false">
+        
+        <!-- Success Alert -->
+        <div x-show="showAlert" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform translate-y-2"
+             x-transition:enter-end="opacity-100 transform translate-y-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span x-text="alertMessage"></span>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Manage Providers</h1>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center space-x-3">
+                    <label class="text-sm font-medium text-gray-700">Filter by Type:</label>
+                    <select onchange="filterByType(this.value)" 
+                            class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">All Types</option>
+                        <option value="CASH" th:selected="${selectedType != null && selectedType.name() == 'CASH'}">Cash</option>
+                        <option value="BANK" th:selected="${selectedType != null && selectedType.name() == 'BANK'}">Bank</option>
+                        <option value="EWALLET" th:selected="${selectedType != null && selectedType.name() == 'EWALLET'}">E-Wallet</option>
+                    </select>
+                </div>
+                <div class="space-x-3">
+                    <button @click="showAddProvider = true" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200 shadow-sm">
+                        + Add Provider
+                    </button>
+                    <button onclick="window.location.href='/'" 
+                            class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition duration-200 shadow-sm">
+                        Back to Home
+                    </button>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preset</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr th:each="provider : ${providers}" class="hover:bg-gray-50 transition duration-150">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${provider.name}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${provider.walletType}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${provider.preset ? 'Yes' : 'No'}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <button th:onclick="'openProviderDetails(' + ${provider.id} + ')'"
+                                        @click="currentProviderId = $event.target.getAttribute('onclick').match(/\d+/)[0]; showProviderDetails = true"
+                                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded transition duration-200">
+                                    Details
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add Provider Modal -->
+        <div x-show="showAddProvider" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             @click.self="showAddProvider = false"
+             class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform scale-95"
+                 x-transition:enter-end="opacity-100 transform scale-100">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800">Add New Provider</h2>
+                        <button @click="showAddProvider = false" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <iframe src="/provider/add" class="w-full h-64 border-0"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- Provider Details Modal -->
+        <div x-show="showProviderDetails" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             @click.self="showProviderDetails = false"
+             class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform scale-95"
+                 x-transition:enter-end="opacity-100 transform scale-100">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800">Provider Details</h2>
+                        <button @click="showProviderDetails = false" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <iframe :src="'/provider/details/' + currentProviderId" class="w-full h-96 border-0"></iframe>
+                </div>
+            </div>
+        </div>
     </div>
-    
-    <div style="margin-bottom: 20px;">
-        <label>Filter by Type:</label>
-        <select onchange="filterByType(this.value)">
-            <option value="">All Types</option>
-            <option value="CASH" th:selected="${selectedType != null && selectedType.name() == 'CASH'}">Cash</option>
-            <option value="BANK" th:selected="${selectedType != null && selectedType.name() == 'BANK'}">Bank</option>
-            <option value="EWALLET" th:selected="${selectedType != null && selectedType.name() == 'EWALLET'}">E-Wallet</option>
-        </select>
-    </div>
-    
-    <table border="1" style="width: 100%;">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Preset</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="provider : ${providers}">
-                <td th:text="${provider.name}"></td>
-                <td th:text="${provider.walletType}"></td>
-                <td th:text="${provider.preset ? 'Yes' : 'No'}"></td>
-                <td>
-                    <button th:onclick="'window.open(\'/provider/details/' + ${provider.id} + '\', \'Provider Details\', \'width=500,height=400\')'">Details</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 
     <script>
         function filterByType(type) {
@@ -51,6 +165,16 @@
                 window.location.href = '/providers?type=' + type;
             }
         }
+
+        // Listen for messages from iframe
+        window.addEventListener('message', function(e) {
+            if (e.data === 'closeModal') {
+                const event = new CustomEvent('close-modal-no-reload');
+                window.dispatchEvent(event);
+            } else if (e.data === 'reloadAndClose') {
+                location.reload();
+            }
+        });
     </script>
 </body>
 </html>
